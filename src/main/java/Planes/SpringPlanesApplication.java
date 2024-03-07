@@ -22,7 +22,7 @@ public class SpringPlanesApplication {
 	@Bean
 	public CommandLineRunner demo(UserRepository daoUser) {
 		return args -> {
-			log.info("Ready, Set, Go!");
+			log.info("Running..");
 			new RestServiceInit().populateTestDataIfNotPresent(daoUser);
 		};
 	}

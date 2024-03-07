@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  spring_db:
+    image: mysql:8.0.26
+    restart: always
+    volumes:
+      - mysql_db:/var/lib/mysql
+
+  users:
+    build: .
+    restart: always
+    ports:
+      - 8280:8280
+    depends_on:
+      - spring_db
+
+volumes:
+  mysql_db:
