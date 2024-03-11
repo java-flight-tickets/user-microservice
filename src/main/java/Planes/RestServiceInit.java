@@ -9,9 +9,7 @@ public class RestServiceInit {
 
     private static final Logger log = Logger.getLogger(RestServiceInit.class.toString());
 
-    void populateTestDataIfNotPresent(
-            UserRepository daoUser
-    ) {
+    public void populateTestDataIfNotPresent(UserRepository daoUser) {
         if (daoUser.count() > 0) {
             log.info("populateTestData - skipped.");
             return;
@@ -24,6 +22,8 @@ public class RestServiceInit {
         p1.setEmail("lana.ben@gmail.com");
         p1.setPassword("geslo123");
         p1.setCountry("Slovenia");
-    }
 
+        daoUser.save(p1);
+        log.info("User saved: " + p1.getId());
+    }
 }

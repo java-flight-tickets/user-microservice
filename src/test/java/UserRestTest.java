@@ -1,22 +1,16 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import Planes.SpringPlanesApplication;
+import Planes.dto.User;
+import Planes.rest.UserController;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import Planes.dao.UserRepository;
-import Planes.dto.User;
-import Planes.rest.UserController;
 
 @SpringBootTest(classes = SpringPlanesApplication.class)
 public class UserRestTest {
@@ -29,17 +23,27 @@ public class UserRestTest {
     @BeforeEach
     void createUser() {
         newUser = userRest.postUser(
-                new User(0,"User","Test","email", "geslo", "Slo")
+                new User(0, "User", "Test", "email", "geslo", "Slo")
         ).getBody();
+    }
+
+    @AfterEach
+    void deleteUser() {
+        ResponseEntity<String> response = userRest.deleteUser(0);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("deleted", response.getBody());
     }
 
     @Test
     void checkProductExistence() {
-        User fromServer = userRest.getUserById(newUser.id()).getBody();
-        assertEquals(fromServer.name(),newUser.name());
-        assertEquals(fromServer.surname(),newUser.surname());
-        assertEquals(fromServer.email(),newUser.email());
-        assertEquals(fromServer.password(),newUser.password());
+        ResponseEntity<User> responseEntity = userRest.getUserById(newUser.id());
+        assertNotNull(responseEntity.getBody());
+        User fromServer = responseEntity.getBody();
+        assertEquals(newUser.name(), fromServer.name());
+        assertEquals(newUser.surname(), fromServer.surname());
+        assertEquals(newUser.email(), fromServer.email());
+        assertEquals(newUser.password(), fromServer.password());
+        assertEquals(newUser.country(), fromServer.country());
     }
 
     @Test

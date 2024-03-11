@@ -3,8 +3,8 @@ package Planes.vao;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-
-@Entity
+import org.springframework.data.mongodb.core.mapping.Document;
+@Document
 @Data @NoArgsConstructor
 @Table(name = "users")
 public class User {

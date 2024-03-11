@@ -32,7 +32,7 @@ public class UserController {
         Optional<Planes.vao.User> val = dao.findById(id);
         if (val.isEmpty()) {
             log.info(()->"/users/"+id+" ; User not found!");
-            return new ResponseEntity("user-not-found", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("user-not-found", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(val.get().toDto());
     }
