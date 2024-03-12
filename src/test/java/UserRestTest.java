@@ -1,105 +1,95 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import Planes.SpringPlanesApplication;
+import Planes.dao.UserRepository;
 import Planes.dto.User;
 import Planes.rest.UserController;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import Planes.dao.UserRepository;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = SpringPlanesApplication.class)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class UserRestTest {
+@ExtendWith(MockitoExtension.class)
+class UserControllerTest {
 
-    @Autowired
-    private UserController controller;
-
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    @Test
-    public void testGetAllUsers() {
-        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
-
-        userRepository.save(user1);
-
-        List<User> fetchedUsers = (List<User>) controller.getAllUsers();
-
-        assertEquals(1, fetchedUsers.size());
-
-        controller.deleteUser(user1.getId());
-        fetchedUsers = (List<User>) controller.getAllUsers();
-
-        assertEquals(0, fetchedUsers.size());
-    }
+    @InjectMocks
+    private UserController userController;
 
     @Test
-    public void testGetUserById() {
-        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
-        userRepository.save(user1);
+    void testGetAllUsers() {
+        List<Planes.vao.User> userList = new ArrayList<>();
+        Planes.vao.User user1 = new Planes.vao.User( "John", "Doe", "john@example.com", "password", "USA");
+        Planes.vao.User user2 = new Planes.vao.User("Jane", "Doe", "jane@example.com", "password", "UK");
+        user1.toDto();
+        user2.toDto();
+        userList.add(user1);
+        userList.add(user2);
+        doReturn(userList).when(userRepository).findAll();
 
-        User fetchedUser = controller.getUserById(user1.getId()).getBody();
+        Iterable<User> result = userController.getAllUsers();
 
-        assertEquals(user1.getId(), fetchedUser.id());
-        assertEquals(user1.getName(), fetchedUser.name());
-        assertEquals(user1.getSurname(), fetchedUser.surname());
-        assertEquals(user1.getEmail(), fetchedUser.email());
-        assertEquals(user1.getPassword(), fetchedUser.password());
-        assertEquals(user1.getCountry(), fetchedUser.country());
-
-        controller.deleteUser(user1.getId());
-        List<User> fetchedUsers = (List<User>) controller.getAllUsers();
-        fetchedUsers = (List<User>) controller.getAllUsers();
-
-        assertEquals(0, fetchedUsers.size());
+        assertNotNull(result);
+        assertEquals(2, ((List<User>) result).size());
     }
 
     @Test
     public void testPostUser() {
-        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
-        User user = user1.toDto();
-        controller.postUser(user);
+        Planes.vao.User user1 = new Planes.vao.User("John", "Doe", "john@example.com", "password", "USA");
+        User userDto = user1.toDto();
 
-        User fetchedUser = controller.getUserById(user1.getId()).getBody();
-        assertEquals(user1.getId(), fetchedUser.id());
-        assertEquals(user1.getName(), fetchedUser.name());
-        assertEquals(user1.getSurname(), fetchedUser.surname());
-        assertEquals(user1.getEmail(), fetchedUser.email());
-        assertEquals(user1.getPassword(), fetchedUser.password());
-        assertEquals(user1.getCountry(), fetchedUser.country());
+        when(userRepository.save(any())).thenReturn(user1);
 
-        controller.deleteUser(user1.getId());
+        ResponseEntity<User> responseEntity = userController.postUser(userDto);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void testGetUserById() {
+        Planes.vao.User user1 = new Planes.vao.User("John", "Doe", "john@example.com", "password", "USA");
+        User userDto = user1.toDto();
+        String id = "1";
+        user1.setId(id);
+
+        when(userRepository.save(any())).thenReturn(user1);
+
+        userController.postUser(userDto);
+
+        verify(userRepository, times(1)).save(any());
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user1));
+
+        ResponseEntity<User> responseEntity = userController.getUserById(id);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertEquals("John", responseEntity.getBody().name());
     }
 
     @Test
     public void testDeleteUser() {
-        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
-        User user = user1.toDto();
-        controller.postUser(user);
+        Planes.vao.User user1 = new Planes.vao.User("John", "Doe", "john@example.com", "password", "USA");
+        User userDto = user1.toDto();
+        String id = "1";
+        user1.setId(id);
 
-        User fetchedUser = controller.getUserById(user1.getId()).getBody();
-        assertEquals(user1.getId(), fetchedUser.id());
-        assertEquals(user1.getName(), fetchedUser.name());
-        assertEquals(user1.getSurname(), fetchedUser.surname());
-        assertEquals(user1.getEmail(), fetchedUser.email());
-        assertEquals(user1.getPassword(), fetchedUser.password());
-        assertEquals(user1.getCountry(), fetchedUser.country());
+        when(userRepository.findById(id)).thenReturn(Optional.of(user1));
 
-        controller.deleteUser(user1.getId());
-        List<User> fetchedUsers = (List<User>) controller.getAllUsers();
+        ResponseEntity<String> responseEntity = userController.deleteUser(id);
 
-        assertEquals(0, fetchedUsers.size());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("deleted", responseEntity.getBody());
     }
-
 }

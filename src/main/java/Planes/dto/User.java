@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(value = Include.NON_NULL)
 public record User (
-        int id,
+        String id,
         String name,
         String surname,
         String email,
@@ -13,10 +13,10 @@ public record User (
         String country) {
 
     public User(String name, String surname) {
-        this(0, name, surname, null, null, null);
+        this(null, name, surname, null, null, null);
     }
 
     public User(String name, String surname, String email, String password, String country) {
-        this(0, name, surname, email, password, country);
+        this(null, name, surname, email, password, country);
     }
 }

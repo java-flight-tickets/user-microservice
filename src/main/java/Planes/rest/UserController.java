@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public @ResponseBody ResponseEntity<User> getUserById(@PathVariable("id") int id) {
+    public @ResponseBody ResponseEntity<User> getUserById(@PathVariable("id") String id) {
         Optional<Planes.vao.User> val = dao.findById(id);
         if (val.isEmpty()) {
             log.info(()->"/users/"+id+" ; User not found!");
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> putUser(@PathVariable("id") int id, @RequestBody User user) {
+    public ResponseEntity<User> putUser(@PathVariable("id") String id, @RequestBody User user) {
         Optional<Planes.vao.User> val = dao.findById(id);
         if (!val.isPresent()) {
             log.info("/users/"+id+" ; User not found!");
@@ -57,8 +57,9 @@ public class UserController {
         return ResponseEntity.ok(vao.toDto());
     }
 
+
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) {
+    public ResponseEntity<String> deleteUser(@PathVariable("id") String id) {
         Optional<Planes.vao.User> val = dao.findById(id);
         if (val.isEmpty()) {
             log.info("/users/"+id+" ; User not found!");

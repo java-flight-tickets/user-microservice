@@ -1,21 +1,16 @@
-version: '3.8'
-
+version: "3.8"
 services:
   mongodb:
     image: mongo:5.0.25-focal
     container_name: "mongodb"
     ports:
       - 27070:27017
-    volumes:
-      - mongodb_data:/data/db
 
-  users:
+  users4:
     build: .
     restart: always
+    container_name: "eventusers4"
     ports:
       - 8280:8280
     depends_on:
       - mongodb
-
-volumes:
-  mongodb_data:

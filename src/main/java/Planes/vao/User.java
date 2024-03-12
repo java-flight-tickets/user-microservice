@@ -2,11 +2,11 @@ package Planes.vao;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 @Document
 @Data @NoArgsConstructor
-@Table(name = "users")
 public class User {
 
     public User(Planes.dto.User dto) {
@@ -44,8 +44,7 @@ public class User {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected int id;
+    protected String id;
     protected String name;
     protected String surname;
     protected String email;
