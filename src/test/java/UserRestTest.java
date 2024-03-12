@@ -65,4 +65,41 @@ public class UserRestTest {
         assertEquals(0, fetchedUsers.size());
     }
 
+    @Test
+    public void testPostUser() {
+        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
+        User user = user1.toDto();
+        controller.postUser(user);
+
+        User fetchedUser = controller.getUserById(user1.getId()).getBody();
+        assertEquals(user1.getId(), fetchedUser.id());
+        assertEquals(user1.getName(), fetchedUser.name());
+        assertEquals(user1.getSurname(), fetchedUser.surname());
+        assertEquals(user1.getEmail(), fetchedUser.email());
+        assertEquals(user1.getPassword(), fetchedUser.password());
+        assertEquals(user1.getCountry(), fetchedUser.country());
+
+        controller.deleteUser(user1.getId());
+    }
+
+    @Test
+    public void testDeleteUser() {
+        Planes.vao.User user1 = new Planes.vao.User("Janez1", "Novak1", "janez1@example.com", "password123", "Slovenia");
+        User user = user1.toDto();
+        controller.postUser(user);
+
+        User fetchedUser = controller.getUserById(user1.getId()).getBody();
+        assertEquals(user1.getId(), fetchedUser.id());
+        assertEquals(user1.getName(), fetchedUser.name());
+        assertEquals(user1.getSurname(), fetchedUser.surname());
+        assertEquals(user1.getEmail(), fetchedUser.email());
+        assertEquals(user1.getPassword(), fetchedUser.password());
+        assertEquals(user1.getCountry(), fetchedUser.country());
+
+        controller.deleteUser(user1.getId());
+        List<User> fetchedUsers = (List<User>) controller.getAllUsers();
+
+        assertEquals(0, fetchedUsers.size());
+    }
+
 }

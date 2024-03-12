@@ -22,7 +22,7 @@ public class UserRepoTest {
         userRepository.deleteAll();
         user = userRepository.save(new User(
                 new Planes.dto.User(
-                        0, "Test", "User", "test@example.com", "password123", "Slovenia"
+                        "Test", "User", "test@example.com", "password123", "Slovenia"
                 )
         ));
     }
