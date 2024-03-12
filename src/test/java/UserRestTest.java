@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 
 import Planes.dao.UserRepository;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = SpringPlanesApplication.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserRestTest {
 
     @Autowired
